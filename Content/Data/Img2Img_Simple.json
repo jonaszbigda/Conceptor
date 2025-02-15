@@ -1,0 +1,91 @@
+{
+  "clientId": 0,
+  "prompt": {
+    "1": {
+      "inputs": {
+        "image": "imagepath"
+      },
+      "class_type": "LoadImageFromPath",
+      "_meta": {
+        "title": "Load Image From Path"
+      }
+    },
+    "2": {
+      "inputs": {
+        "ckpt_name": "modelname"
+      },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": "Load Checkpoint"
+      }
+    },
+    "3": {
+      "inputs": {
+        "pixels": ["1", 0],
+        "vae": ["2", 2]
+      },
+      "class_type": "VAEEncode",
+      "_meta": {
+        "title": "VAE Encode"
+      }
+    },
+    "4": {
+      "inputs": {
+        "seed": 0,
+        "steps": "stepsnum",
+        "cfg": "cfgnum",
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": "denoisenum",
+        "model": ["2", 0],
+        "positive": ["5", 0],
+        "negative": ["6", 0],
+        "latent_image": ["3", 0]
+      },
+      "class_type": "KSampler",
+      "_meta": {
+        "title": "KSampler"
+      }
+    },
+    "5": {
+      "inputs": {
+        "text": "positiveprompt",
+        "clip": ["2", 1]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "CLIP Text Encode (Prompt)"
+      }
+    },
+    "6": {
+      "inputs": {
+        "text": "negativeprompt",
+        "clip": ["2", 1]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "CLIP Text Encode (Prompt)"
+      }
+    },
+    "7": {
+      "inputs": {
+        "samples": ["4", 0],
+        "vae": ["2", 2]
+      },
+      "class_type": "VAEDecode",
+      "_meta": {
+        "title": "VAE Decode"
+      }
+    },
+    "8": {
+      "inputs": {
+        "filename_prefix": "Conceptor",
+        "images": ["7", 0]
+      },
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "Save Image"
+      }
+    }
+  }
+}
