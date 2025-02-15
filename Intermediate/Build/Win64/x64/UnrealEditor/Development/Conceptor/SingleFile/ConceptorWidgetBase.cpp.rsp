@@ -1,0 +1,54 @@
+"D:\WORK\ConceptSD\Plugins\Conceptor\Source\Conceptor\Private\ConceptorWidgetBase.cpp"
+/external:W0
+/external:I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\INCLUDE"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\winrt"
+/FI"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\Definitions.Conceptor.h"
+/Fo"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\SingleFile\ConceptorWidgetBase.cpp.obj"
+/sourceDependencies "D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\SingleFile\ConceptorWidgetBase.cpp.dep.json"
+@"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\Conceptor.Shared.rsp"
+/Zc:inline
+/nologo
+/Oi
+/FC
+/c
+/Gw
+/Gy
+/utf-8
+/wd4819
+/DSAL_NO_ATTRIBUTE_DECLARATIONS=1
+/permissive-
+/Zc:strictStrings-
+/Zc:__cplusplus
+/D_CRT_STDIO_LEGACY_WIDE_SPECIFIERS=1
+/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS=1
+/D_WINDLL
+/D_DISABLE_EXTENDED_ALIGNED_STORAGE
+/Ob2
+/d2ExtendedWarningInfo
+/Ox
+/Ot
+/GF
+/errorReport:prompt
+/EHsc
+/DPLATFORM_EXCEPTIONS_DISABLED=0
+/Z7
+/MD
+/bigobj
+/fp:fast
+/Zo
+/Zp8
+/we4456
+/we4458
+/we4459
+/we4668
+/wd4244
+/wd4838
+/TP
+/GR-
+/W4
+/std:c++20
+/Zc:preprocessor
+/wd5054

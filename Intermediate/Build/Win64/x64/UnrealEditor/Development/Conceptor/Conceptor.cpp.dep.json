@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\work\\conceptsd\\plugins\\conceptor\\source\\conceptor\\private\\conceptor.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\work\\conceptsd\\intermediate\\build\\win64\\x64\\conceptsdeditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.h.pch",
+        "Includes": [
+            "d:\\work\\conceptsd\\plugins\\conceptor\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\conceptor\\definitions.conceptor.h",
+            "d:\\work\\conceptsd\\plugins\\conceptor\\source\\conceptor\\public\\conceptor.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

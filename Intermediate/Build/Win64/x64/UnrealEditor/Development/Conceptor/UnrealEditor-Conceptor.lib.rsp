@@ -1,0 +1,14 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-Conceptor.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"D:\WORK\ConceptSD\Intermediate\Build\Win64\x64\ConceptSDEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.ValApi.Cpp20.h.obj"
+"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\Module.Conceptor.cpp.obj"
+"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\Conceptor.cpp.obj"
+"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\ConceptorWidgetBase.cpp.obj"
+"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\Default.rc2.res"
+/OUT:"D:\WORK\ConceptSD\Plugins\Conceptor\Intermediate\Build\Win64\x64\UnrealEditor\Development\Conceptor\UnrealEditor-Conceptor.lib"

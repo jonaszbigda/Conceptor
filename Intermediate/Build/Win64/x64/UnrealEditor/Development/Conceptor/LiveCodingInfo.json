@@ -1,0 +1,11 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.Conceptor.cpp.obj": [
+			"Conceptor.init.gen.cpp.obj",
+			"ConceptorWidgetBase.gen.cpp.obj",
+			"Conceptor.cpp.obj",
+			"ConceptorWidgetBase.cpp.obj"
+		]
+	}
+}
