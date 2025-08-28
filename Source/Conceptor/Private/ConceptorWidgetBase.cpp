@@ -388,7 +388,6 @@ void UConceptorWidgetBase::UpdateModels() {
 	FHttpModule* Http = &FHttpModule::Get();
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
 	Checkpoints.Empty();
-	ControlNets.Empty();
 
 	Request->OnProcessRequestComplete().BindLambda([this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 	{
@@ -400,23 +399,20 @@ void UConceptorWidgetBase::UpdateModels() {
 
 			if (FJsonSerializer::Deserialize(JsonReader, OutValue)) {
 				MainObject = OutValue->AsObject();
-				TArray<TSharedPtr<FJsonValue>> FilesArray = MainObject->GetArrayField("files");
+				TSharedPtr<FJsonObject> CheckpointLoader = MainObject->GetObjectField("CheckpointLoaderSimple");
+				TSharedPtr<FJsonObject> InputField = CheckpointLoader->GetObjectField("input");
+				TSharedPtr<FJsonObject> RequiredField = InputField->GetObjectField("required");
+				TArray<TSharedPtr<FJsonValue>> CkeckpointsArray = RequiredField->GetArrayField("ckpt_name");
 
-				for (TSharedPtr<FJsonValue>& Value : FilesArray) {
-					TSharedPtr<FJsonObject> FileObject = Value->AsObject();
-					FString FileName;
-					bool IsCheckpointsFile = FileObject->GetStringField("path").Split("checkpoints\\", nullptr, &FileName);
-					bool IsControlNetFile = FileObject->GetStringField("path").Split("controlnet\\", nullptr, &FileName);
+				for (TSharedPtr<FJsonValue>& Checkpoint : CkeckpointsArray) {
+					TArray<TSharedPtr<FJsonValue>> FileObject = Checkpoint->AsArray();
+					if (FileObject.IsEmpty()) continue;
 
-					if ((IsCheckpointsFile || IsControlNetFile) && (FileName.Contains(".safetensors") || FileName.Contains(".pth"))) {
-						if (IsCheckpointsFile) {
-							Checkpoints.Add(FileName);
-							UE_LOG(LogTemp, Warning, TEXT("%s added to Checkpoints"), *FileName);
-						}
-						else {
-							ControlNets.Add(FileName);
-							UE_LOG(LogTemp, Warning, TEXT("%s added to ControlNets"), *FileName);
-						}
+					FString FileName = FileObject[0]->AsString();
+
+					if (FileName.Contains(".safetensors") || FileName.Contains(".pth")) {
+						Checkpoints.Add(FileName);
+						UE_LOG(LogTemp, Warning, TEXT("%s added to Checkpoints"), *FileName);
 					}
 				}
 			}
@@ -424,7 +420,46 @@ void UConceptorWidgetBase::UpdateModels() {
 		OnModelsUpdated();
 	});
 
-	Request->SetURL("http://127.0.0.1:8188/internal/files?directory=models");
+	Request->SetURL("http://127.0.0.1:8188/api/object_info");
+	Request->SetVerb("GET");
+	Request->ProcessRequest();
+}
+
+void UConceptorWidgetBase::UpdateControlNets() {
+	FHttpModule* Http = &FHttpModule::Get();
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+	ControlNets.Empty();
+
+	Request->OnProcessRequestComplete().BindLambda([this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+		{
+			if (bWasSuccessful && Response.IsValid())
+			{
+				TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(Response->GetContentAsString());
+				TSharedPtr<FJsonValue> OutValue;
+				TSharedPtr<FJsonObject> MainObject;
+
+				if (FJsonSerializer::Deserialize(JsonReader, OutValue)) {
+					MainObject = OutValue->AsObject();
+					TSharedPtr<FJsonObject> CNLoader = MainObject->GetObjectField("ControlNetLoader");
+					TSharedPtr<FJsonObject> InputField = CNLoader->GetObjectField("input");
+					TSharedPtr<FJsonObject> RequiredField = InputField->GetObjectField("required");
+					TArray<TSharedPtr<FJsonValue>> CNArray = RequiredField->GetArrayField("control_net_name");
+					TArray<TSharedPtr<FJsonValue>> FilenameArray = CNArray[0]->AsArray();
+
+					for (TSharedPtr<FJsonValue>& ControlNet : FilenameArray) {
+						FString FileName = ControlNet->AsString();
+
+						if (FileName.Contains(".safetensors") || FileName.Contains(".pth")) {
+							ControlNets.Add(FileName);
+							UE_LOG(LogTemp, Warning, TEXT("%s added to ControlNets"), *FileName);
+						}
+					}
+				}
+			}
+			OnModelsUpdated();
+		});
+
+	Request->SetURL("http://127.0.0.1:8188/api/object_info");
 	Request->SetVerb("GET");
 	Request->ProcessRequest();
 }

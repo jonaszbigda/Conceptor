@@ -154,6 +154,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Conceptor")
 	void UpdateModels();
 
+	UFUNCTION(BlueprintCallable, Category = "Conceptor")
+	void UpdateControlNets();
+
 	UFUNCTION(BlueprintNativeEvent, Category = "Conceptor")
 	void OnModelsUpdated();
 	virtual void OnModelsUpdated_Implementation();
