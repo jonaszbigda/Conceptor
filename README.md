@@ -30,7 +30,7 @@
 
 **ComfyUI-Manager** (optional but highly recommended) - This will help You install some nodes, we need for Conceptor to work. (download here)
 
-**ComfyUI_Ib_CustomNodes** - (It's ID in custom nodes manager is: 1306) This package will provide us with LoadImageFromPath node.
+**ComfyUI_Ib_CustomNodes** - (It's ID in custom nodes manager is: 782) This package will provide us with LoadImageFromPath node.
 
 **comfyui_controlnet_aux** - (It's ID in custom nodes manager is: 5) This will provide us with some helpers for depth and pose calculation from input images.
 
