@@ -60,7 +60,7 @@ void UConceptorWidgetBase::Connect() {
 		SetupWebSocket();
 		SetupViewportAccess();
 		FString ScreenshotsDir = FPaths::ProjectSavedDir() / TEXT("Screenshots/");
-		ScreenshotPath = ScreenshotsDir + TEXT("screenshot");
+		ScreenshotPath = FPaths::ConvertRelativePathToFull(ScreenshotsDir + TEXT("screenshot"));
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Already connected"));
