@@ -60,7 +60,7 @@ void UConceptorWidgetBase::Connect() {
 		SetupWebSocket();
 		SetupViewportAccess();
 		FString ScreenshotsDir = FPaths::ProjectSavedDir() / TEXT("Screenshots/");
-		ScreenshotPath = ScreenshotsDir + TEXT("screenshot");
+		ScreenshotPath = FPaths::ConvertRelativePathToFull(ScreenshotsDir + TEXT("screenshot"));
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Already connected"));
@@ -85,19 +85,19 @@ void UConceptorWidgetBase::HandleMessageRecieved(FString Message) {
 
 	if (MessageType == TEXT("progress"))
 	{
-		int32 CurrentStep = MainObject->GetObjectField("data")->GetNumberField("value");
-		int32 LastStep = MainObject->GetObjectField("data")->GetNumberField("max");
+		int32 CurrentStep = MainObject->GetObjectField(TEXT("data"))->GetNumberField(TEXT("value"));
+		int32 LastStep = MainObject->GetObjectField(TEXT("data"))->GetNumberField(TEXT("max"));
 		Progress = 1.0f * CurrentStep / LastStep;
 		UE_LOG(LogTemp, Warning, TEXT("Progress: %f"), Progress);
 		OnStatusReceived.Broadcast(TEXT("progress"));
-		FString PromptId = MainObject->GetObjectField("data")->GetStringField("prompt_id");
+		FString PromptId = MainObject->GetObjectField(TEXT("data"))->GetStringField(TEXT("prompt_id"));
 		if (!PromptId.Equals(LastPromptId)) {
 			LastPromptId = PromptId;
 			UE_LOG(LogTemp, Warning, TEXT("LastPromptId updated to: %s"), *LastPromptId);
 		}
 	}
 	else if (MessageType == TEXT("status")) {
-		QueueRemaining = MainObject->GetObjectField("data")->GetObjectField("status")->GetObjectField("exec_info")->GetNumberField("queue_remaining");
+		QueueRemaining = MainObject->GetObjectField(TEXT("data"))->GetObjectField(TEXT("status"))->GetObjectField(TEXT("exec_info"))->GetNumberField(TEXT("queue_remaining"));
 		OnStatusReceived.Broadcast(TEXT("status"));
 		UE_LOG(LogTemp, Warning, TEXT("QueueRemainig: %d"), QueueRemaining);
 		if (QueueRemaining == 0) {
@@ -145,15 +145,15 @@ void UConceptorWidgetBase::SetWorkflowValues() {
 
 	if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
 		for (const auto& KeyValuePair : JsonObject->Values) {
-			const FString& Key = KeyValuePair.Key;
+			const auto& Key = KeyValuePair.Key;
 			TSharedPtr<FJsonObject> SubObject = KeyValuePair.Value->AsObject();
 
 			if (SubObject.IsValid()) {
-				FString ClassType = SubObject->GetStringField("class_type");
+				FString ClassType = SubObject->GetStringField(TEXT("class_type"));
 				
 				if (ClassType.Equals("KSampler")) {
 					// KSampler
-					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField("inputs");
+					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField(TEXT("inputs"));
 					int32 RandomSeed = FMath::Rand();
 					InputsObject->SetNumberField("seed", RandomSeed);
 					InputsObject->SetNumberField("steps", Steps);
@@ -163,25 +163,25 @@ void UConceptorWidgetBase::SetWorkflowValues() {
 
 				if (ClassType.Equals("CheckpointLoaderSimple")) {
 					// Model loader
-					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField("inputs");
+					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField(TEXT("inputs"));
 					InputsObject->SetStringField("ckpt_name", *Model);
 				}
 
 				if (ClassType.Equals("ControlNetLoader")) {
 					// ControlNet loader
-					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField("inputs");
+					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField(TEXT("inputs"));
 					InputsObject->SetStringField("control_net_name", *ControlNet);
 				}
 
 				if (ClassType.Equals("ControlNetApplyAdvanced")) {
 					// ControlNetStrength
-					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField("inputs");
+					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField(TEXT("inputs"));
 					InputsObject->SetNumberField("strength", ControlNetStrength);
 				}
 
 				if (ClassType.Equals("LoadImageFromPath")) {
 					// LoadImageFromPath
-					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField("inputs");
+					TSharedPtr<FJsonObject> InputsObject = SubObject->GetObjectField(TEXT("inputs"));
 					FString ScreenshotPathWithExt = ScreenshotPath + TEXT(".png");
 					InputsObject->SetStringField("image", *ScreenshotPathWithExt);
 				}
@@ -242,10 +242,12 @@ void UConceptorWidgetBase::FetchAssetURL() {
 		}
 		else {
 			switch (pRequest->GetStatus()) {
-			case EHttpRequestStatus::Failed_ConnectionError:
+			case EHttpRequestStatus::Failed:
 				UE_LOG(LogTemp, Error, TEXT("Connection failed."));
+				break;
 			default:
 				UE_LOG(LogTemp, Error, TEXT("Request failed."));
+				break;
 			}
 		}
 	});
@@ -309,14 +311,14 @@ FString UConceptorWidgetBase::GetFilenameFromHistory(FString RawJson) {
 
 	if (FJsonSerializer::Deserialize(JsonReader, OutValue) && Progress == 1.0f) {
 		MainObject = OutValue->AsObject();
-		TSharedPtr<FJsonObject> OutputsObject = MainObject->GetObjectField(LastPromptId)->GetObjectField("outputs");
+		TSharedPtr<FJsonObject> OutputsObject = MainObject->GetObjectField(LastPromptId)->GetObjectField(TEXT("outputs"));
 
 		for (const auto& KeyValuePair : OutputsObject->Values) {
-			const FString& Key = KeyValuePair.Key;
-			if (!KeyValuePair.Value->AsObject()->GetArrayField("images").IsEmpty()) {
-				TSharedPtr<FJsonObject> SubObject = KeyValuePair.Value->AsObject()->GetArrayField("images")[0]->AsObject();
-				if (SubObject->GetStringField("type").Equals("output")) {
-					Filename = SubObject->GetStringField("filename");
+			const auto& Key = KeyValuePair.Key;
+			if (!KeyValuePair.Value->AsObject()->GetArrayField(TEXT("images")).IsEmpty()) {
+				TSharedPtr<FJsonObject> SubObject = KeyValuePair.Value->AsObject()->GetArrayField(TEXT("images"))[0]->AsObject();
+				if (SubObject->GetStringField(TEXT("type")).Equals(TEXT("output"))) {
+					Filename = SubObject->GetStringField(TEXT("filename"));
 					break;
 				}
 			}
@@ -399,10 +401,10 @@ void UConceptorWidgetBase::UpdateModels() {
 
 			if (FJsonSerializer::Deserialize(JsonReader, OutValue)) {
 				MainObject = OutValue->AsObject();
-				TSharedPtr<FJsonObject> CheckpointLoader = MainObject->GetObjectField("CheckpointLoaderSimple");
-				TSharedPtr<FJsonObject> InputField = CheckpointLoader->GetObjectField("input");
-				TSharedPtr<FJsonObject> RequiredField = InputField->GetObjectField("required");
-				TArray<TSharedPtr<FJsonValue>> CkeckpointsArray = RequiredField->GetArrayField("ckpt_name");
+				TSharedPtr<FJsonObject> CheckpointLoader = MainObject->GetObjectField(TEXT("CheckpointLoaderSimple"));
+				TSharedPtr<FJsonObject> InputField = CheckpointLoader->GetObjectField(TEXT("input"));
+				TSharedPtr<FJsonObject> RequiredField = InputField->GetObjectField(TEXT("required"));
+				TArray<TSharedPtr<FJsonValue>> CkeckpointsArray = RequiredField->GetArrayField(TEXT("ckpt_name"));
 
 				for (TSharedPtr<FJsonValue>& Checkpoint : CkeckpointsArray) {
 					TArray<TSharedPtr<FJsonValue>> FileObject = Checkpoint->AsArray();
@@ -440,10 +442,10 @@ void UConceptorWidgetBase::UpdateControlNets() {
 
 				if (FJsonSerializer::Deserialize(JsonReader, OutValue)) {
 					MainObject = OutValue->AsObject();
-					TSharedPtr<FJsonObject> CNLoader = MainObject->GetObjectField("ControlNetLoader");
-					TSharedPtr<FJsonObject> InputField = CNLoader->GetObjectField("input");
-					TSharedPtr<FJsonObject> RequiredField = InputField->GetObjectField("required");
-					TArray<TSharedPtr<FJsonValue>> CNArray = RequiredField->GetArrayField("control_net_name");
+					TSharedPtr<FJsonObject> CNLoader = MainObject->GetObjectField(TEXT("ControlNetLoader"));
+					TSharedPtr<FJsonObject> InputField = CNLoader->GetObjectField(TEXT("input"));
+					TSharedPtr<FJsonObject> RequiredField = InputField->GetObjectField(TEXT("required"));
+					TArray<TSharedPtr<FJsonValue>> CNArray = RequiredField->GetArrayField(TEXT("control_net_name"));
 					TArray<TSharedPtr<FJsonValue>> FilenameArray = CNArray[0]->AsArray();
 
 					for (TSharedPtr<FJsonValue>& ControlNet : FilenameArray) {
